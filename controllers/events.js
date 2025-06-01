@@ -26,22 +26,64 @@ const crearEvento = async (req, res = response) => {
 
 }
 
-const getEvento = (req, res = response) => {
+const getEvento = async (req, res = response) => {
+
+    const eventos = await Evento.find()
+        .populate('user', 'name');
 
     res.json({
         ok: true,
-        msg: 'get events'
-    })
+        eventos
+    });
 }
 
 
-const actualizarEvento = (req, res = response) => {
+const actualizarEvento = async (req, res = response) => {
+
+    const eventoId = req.params.id;
+    const uid = req.uid;
+    try {
+
+        const evento = await Evento.findById(eventoId)
+
+        if (!evento) {
+            res.status(404).json({
+                ok: false,
+                msg: 'Evento no existe con ese id'
+            });
+        }
+
+        if (evento.user.toString() !== uid) {
+            return res.status(401).json({
+                ok: false,
+                msg: 'No tiene los privilegios para editar el evento'
+            });
+        }
+
+        const nuevoEvento = {
+            ...req.body,
+            user: uid
+        }
+
+        const eventoActualizado = await Evento.findByIdAndUpdate(eventoId, nuevoEvento,{new:true});
+
+        res.json({
+            ok: true,
+            evento: eventoActualizado
+        })
 
 
-    return res.status(201).json({
-        ok: true,
-        msg: 'actualizarEvento'
-    })
+
+    } catch (error) {
+        console.log(error)
+        res.status(500).json({
+            ok: false,
+            msg: 'hable con el admin'
+        });
+
+    }
+
+
 }
 
 
