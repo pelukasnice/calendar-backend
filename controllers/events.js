@@ -1,5 +1,15 @@
 const {response} = require('express')
 
+const crearEvento = (req, res = response) =>{
+
+    //verificar que tenga el evento
+    console.log(req.body)
+
+    return res.status(201).json({
+        ok:true,
+        msg:'crear Event'
+    })
+}
 
 const getEvento = (req, res = response) => {
 
@@ -9,14 +19,6 @@ const getEvento = (req, res = response) => {
     })
 }
 
-const crearEvento = (req, res = response) =>{
-
-
-    return res.status(201).json({
-        ok:true,
-        msg:'crear Event'
-    })
-}
 
 const actualizarEvento = (req, res = response) => {
 
